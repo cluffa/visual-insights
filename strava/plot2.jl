@@ -2,32 +2,66 @@ using DataFrames
 using Plots
 using CSV
 using Dates
+using Printf
+using Statistics
+
+struct Pace
+    minutes::Float64
+end
+
+function Base.show(io::IO, p::Pace)
+    minutes = floor(p.minutes)
+    seconds = round((p.minutes - minutes) * 60)
+    @printf io "%d'%02d\"/mi" minutes seconds
+end
+
+"returns a new column name with no spaces or special characters, and capitalized first letters"
+function newName(name::String)
+    name = split(name)
+    name = join(uppercasefirst.(name))
+    name = replace(name, r"[^a-zA-Z0-9]" => "")
+    name = Symbol(name)
+end
+
+activities = begin
+    df = CSV.read("strava/data/activities.csv", DataFrame, dateformat = dateformat"u dd, y, HH:MM:SS p")
+
+    rename!(newName, df)
+    df.Distance = df.Distance .* 0.621371
+    df.ElapsedTime = df.ElapsedTime ./ 60
+    df.AvgPace = Pace.(df.ElapsedTime ./ df.Distance)
+
+    df
+end
 
 begin
-    df = CSV.read("data/activities.csv", DataFrame)
-    select!(df, ["Activity Date", "Distance"])
+    df = copy(activities)
+    df[!, :YM] = Dates.format.(df[!, :ActivityDate], "Y-m")
+    df = combine(groupby(df, :YM), :Distance => sum, :ElapsedTime => sum)
+    df.AvgPace = df.ElapsedTime_sum ./ df.Distance_sum
 
-    transform!(
-        df, 
-        :Distance => (x -> x * 0.621371) => :Distance,
-        "Activity Date" => (x -> DateTime.(x, "u dd, y, HH:MM:SS p")) => "Activity Date"
-    )
-
-    df[!, "YM"] = Dates.format.(df[!, "Activity Date"], "Y-m")
-
-    df = combine(groupby(df, "YM"), "Distance" => sum)
-
-    plot(
+    p = plot(
         df[!, "YM"],
         df[!, "Distance_sum"],
-        title="Monthly Distance",
-        xlabel="Month",
-        ylabel="Distance (miles)",
-        label="Distance",
-        legend=false,
-        dpi=500,
-        # background=:transparent,
+        title = "Monthly Distance",
+        xlabel = "Month",
+        ylabel = "Distance (miles)",
+        label = "Distance",
+        legend = :topleft,
+        dpi = 500,
     )
 
-    savefig("plots/monthly_distance.png")
+    # plot!(
+    #     twinx(),
+    #     df[!, "YM"],
+    #     df[!, "AvgPace"],
+    #     label = "Pace",
+    #     ylabel = "Average Pace (mins/mile)",
+    #     color = :red,
+    #     legend = :bottomright,
+    # )
+
+    savefig(p, "strava/plots/monthly_distance.png")
+    
+    p
 end
