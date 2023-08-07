@@ -112,3 +112,4 @@ begin
     savefig(p, "plots/activities_grid.png")
     savefig(p, "plots/activities_grid.svg")
 end
+
