@@ -4,6 +4,9 @@ using ProgressMeter
 using DataFrames
 using Plots
 using Random
+using Dates
+
+background = :white
 
 colors = Symbol.(keys(Plots.Colors.color_names))
 
@@ -11,7 +14,6 @@ activity_files = [file for file in readdir("strava/data/activities/", sort = tru
 
 begin
     activities = DataFrame[]
-    overtime = DataFrame() # TODO fill this
     @showprogress for file in activity_files
         tcx = GZip.open(file, "r") do io
             xml_dict(strip(String(read(io))))
@@ -48,6 +50,40 @@ begin
     end
 end
 
+begin
+    latmin, lonmin = 40.380824, -83.068371
+    latmax, lonmax = 40.413487, -83.047552
+
+
+    p = plot(
+        title = "Delaware State Park",
+        legend = false,
+        xaxis = false,
+        yaxis = false,
+        grid = false,
+        ticks = false,
+        size = (800, 1000),
+        dpi = 500,
+        aspect_ratio = :equal,
+        background = background,
+        xlims = (lonmin, lonmax),
+        ylims = (latmin, latmax),
+    )
+
+    for i in 1:length(activities)
+        plot!(
+            p,
+            activities[i][!, :lon],
+            activities[i][!, :lat],
+            alpha = 0.5,
+            linewidth = 2,
+        )
+    end
+
+    display(p)
+    savefig(p, "strava/plots/activities_delaware.png")
+end
+
 # zeroed overlapped activities
 begin
     p = plot(
@@ -59,7 +95,7 @@ begin
         # size = (1000, 500),
         dpi = 500,
         aspect_ratio = :equal,
-        background = :transparent,
+        background = background,
     )
 
     for i in 1:length(activities)
@@ -72,7 +108,6 @@ begin
 
     display(p)
     savefig(p, "strava/plots/activities_zeroed.png")
-    savefig(p, "strava/plots/activities_zeroed.svg")
 end
 
 # grid of activities
@@ -89,7 +124,7 @@ begin
             # size = (1000, 500),
             dpi = 500,
             aspect_ratio = :equal,
-            background = :transparent,
+            background = background,
             activities[i][!, :x],
             activities[i][!, :y],
             # alpha = 0.5
@@ -106,6 +141,5 @@ begin
     display(p)
 
     savefig(p, "strava/plots/activities_grid.png")
-    savefig(p, "strava/plots/activities_grid.svg")
 end
 

@@ -7,4 +7,6 @@ a collection of data visualizations
 
 ![activities zeroed](strava/plots/activities_zeroed.png)
 
+![activities delaware](strava/plots/activities_delaware.png)
+
 ![monthly distance](strava/plots/monthly_distance.png)
