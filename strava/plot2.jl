@@ -47,19 +47,20 @@ begin
         xlabel = "Month",
         ylabel = "Distance (miles)",
         label = "Distance",
-        legend = :topleft,
+        legend = :bottomleft,
         dpi = 500,
     )
 
-    # plot!(
-    #     twinx(),
-    #     df[!, "YM"],
-    #     df[!, "AvgPace"],
-    #     label = "Pace",
-    #     ylabel = "Average Pace (mins/mile)",
-    #     color = :red,
-    #     legend = :bottomright,
-    # )
+    plot!(
+        twinx(),
+        df[!, "YM"],
+        df[!, "AvgPace"],
+        label = "Average Pace",
+        ylabel = "Average Pace (mins/mile)",
+        yflip = true,
+        color = :red,
+        legend = :bottomright,
+    )
 
     savefig(p, "strava/plots/monthly_distance.png")
     

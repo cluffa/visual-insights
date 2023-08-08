@@ -7,11 +7,7 @@ using Random
 
 colors = Symbol.(keys(Plots.Colors.color_names))
 
-if isdir("strava")
-    cd("strava")
-end
-
-activity_files = [file for file in readdir("data/activities/", sort = true, join = true) if contains(file, ".tcx.gz")]
+activity_files = [file for file in readdir("strava/data/activities/", sort = true, join = true) if contains(file, ".tcx.gz")]
 
 begin
     activities = DataFrame[]
@@ -75,8 +71,8 @@ begin
     end
 
     display(p)
-    savefig(p, "plots/activities_zeroed.png")
-    savefig(p, "plots/activities_zeroed.svg")
+    savefig(p, "strava/plots/activities_zeroed.png")
+    savefig(p, "strava/plots/activities_zeroed.svg")
 end
 
 # grid of activities
@@ -109,7 +105,7 @@ begin
 
     display(p)
 
-    savefig(p, "plots/activities_grid.png")
-    savefig(p, "plots/activities_grid.svg")
+    savefig(p, "strava/plots/activities_grid.png")
+    savefig(p, "strava/plots/activities_grid.svg")
 end
 
