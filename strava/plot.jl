@@ -5,6 +5,7 @@ using DataFrames
 using Plots
 using Random
 using Dates
+Random.seed!(1234)
 
 background = :white
 
@@ -19,7 +20,7 @@ begin
             xml_dict(strip(String(read(io))))
         end
 
-        df = DataFrame(
+        local df = DataFrame(
             lat = Float64[],
             lon = Float64[],
             ele = Float64[],
@@ -55,7 +56,7 @@ begin
     latmax, lonmax = 40.413487, -83.047552
 
 
-    p = plot(
+    local p = plot(
         title = "Delaware State Park",
         legend = false,
         xaxis = false,
@@ -86,7 +87,7 @@ end
 
 # zeroed overlapped activities
 begin
-    p = plot(
+    local p = plot(
         legend = false,
         xaxis = false,
         yaxis = false,
@@ -115,7 +116,8 @@ begin
     plots = []
 
     for i in 1:length(activities)
-        p = plot(
+        
+        local p = plot(
             legend = false,
             xaxis = false,
             yaxis = false,
@@ -136,10 +138,10 @@ begin
     end
 
     shuffle!(plots)
-    p = plot(plots...)
+    local p = plot(plots...)
 
     display(p)
 
     savefig(p, "strava/plots/activities_grid.png")
-end
+end;
 
