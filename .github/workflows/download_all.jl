@@ -1,5 +1,5 @@
 using Pkg
-Pkg.activate(".")
+Pkg.activate(".github/workflows")
 Pkg.add(url = "https://github.com/cluffa/StravaConnect.jl.git")
 
 using StravaConnect
