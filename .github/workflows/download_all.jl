@@ -1,4 +1,4 @@
-user_json_file = joinpath(DATA_DIR, "user.json")
+user_json_file = joinpath(ENV["STRAVA_DATA_DIR"], "user.json")
 
 open(user_json_file, "w+") do io
     write(io, ENV["USER_JSON"])
