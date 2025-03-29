@@ -26,18 +26,19 @@ jobs:
     - uses: julia-actions/setup-julia@v2
       with:
         version: '1'
-    # - name: Download previous data.jld2 artifact
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: data-jld2
-    #     path: $HOME/strava_data
     - run: mkdir ~/strava_data || echo "Directory already exists" # Create the directory for storing Strava data
-    - run: echo "${{ secrets.USER_JSON }}" > ~/strava_data/user.json
+    - name: Download previous data.jld2 artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: data-jld2
+        path: ~/strava_data # Download the artifact to the specified directory
+        if-no-files-found: ignore # Ignore if no files are found, to prevent the workflow from failing
     - run: julia .github/workflows/download_all.jl
       env:
         STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
         STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
         STRAVA_DATA_DIR: ~/strava_data
+        USER_JSON: ${{ secrets.USER_JSON }} # Pass the user JSON as an environment variable
     - name: Upload data.jld2 artifact
       uses: actions/upload-artifact@v4
       with:

@@ -1,3 +1,9 @@
+user_json_file = joinpath(DATA_DIR, "user.json")
+
+open(user_json_file, "w+") do io
+    write(io, ENV["USER_JSON"])
+end
+
 using Pkg
 Pkg.activate(".github/workflows")
 Pkg.add(url = "https://github.com/cluffa/StravaConnect.jl.git")
