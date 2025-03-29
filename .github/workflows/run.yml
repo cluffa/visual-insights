@@ -31,6 +31,7 @@ jobs:
       with:
         name: data-jld2
         path: $HOME/strava_data
+        if-no-files-found: warn
     - run: export STRAVA_DATA_DIR=$HOME/strava_data
     - run: echo "$USER_JSON" > $STRAVA_DATA_DIR/user.json
     - run: mkdir -p $STRAVA_DATA_DIR && julia .github/workflows/download_all.jl
