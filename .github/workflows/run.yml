@@ -27,7 +27,7 @@ jobs:
       with:
         version: '1'
     - name: Download previous data.jld2 artifact
-      uses: actions/download-artifact
+      uses: actions/download-artifact@v4
       with:
         name: data-jld2
         path: $HOME/strava_data
@@ -35,7 +35,7 @@ jobs:
     - run: echo "$USER_JSON" > $STRAVA_DATA_DIR/user.json
     - run: mkdir -p $STRAVA_DATA_DIR && julia .github/workflows/download_all.jl
     - name: Upload data.jld2 artifact
-      uses: actions/upload-artifact
+      uses: actions/upload-artifact@v4
       with:
         name: data-jld2
         path: $STRAVA_DATA_DIR/data.jld2
