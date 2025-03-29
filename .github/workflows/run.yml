@@ -27,12 +27,12 @@ jobs:
       with:
         version: '1'
     - run: mkdir ~/strava_data || echo "Directory already exists" # Create the directory for storing Strava data
-    - name: Download previous data.jld2 artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: data-jld2
-        path: ~/strava_data # Download the artifact to the specified directory
-        if-no-files-found: ignore # Ignore if no files are found, to prevent the workflow from failing
+    # - name: Download previous data.jld2 artifact
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: data-jld2
+    #     path: ~/strava_data # Download the artifact to the specified directory
+    #     if-no-files-found: ignore # Ignore if no files are found, to prevent the workflow from failing
     - run: julia .github/workflows/download_all.jl
       env:
         STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
