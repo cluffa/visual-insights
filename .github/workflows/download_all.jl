@@ -1,9 +1,3 @@
-mkdir(ENV["STRAVA_DATA_DIR"])
-
-open(joinpath(ENV["STRAVA_DATA_DIR"], "user.json"), "w+") do f
-    write(f, ENV["USER_JSON"])
-end
-
 using Pkg
 Pkg.activate(".")
 Pkg.add(url = "https://github.com/cluffa/StravaConnect.jl.git")
