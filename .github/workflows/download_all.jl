@@ -1,3 +1,5 @@
+mkdir(ENV["STRAVA_DATA_DIR"])
+
 open(joinpath(ENV["STRAVA_DATA_DIR"], "user.json"), "w+") do f
     write(f, ENV["USER_JSON"])
 end
