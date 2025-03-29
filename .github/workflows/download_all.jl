@@ -1,8 +1,6 @@
 user_json_file = joinpath(ENV["STRAVA_DATA_DIR"], "user.json")
 
-open(user_json_file, "w+") do io
-    write(io, ENV["USER_JSON"])
-end
+write(joinpath(ENV["STRAVA_DATA_DIR"], "user.json"), ENV["USER_JSON"])
 
 using Pkg
 Pkg.activate(".github/workflows")
