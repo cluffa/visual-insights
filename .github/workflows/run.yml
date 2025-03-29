@@ -33,7 +33,7 @@ jobs:
     #     path: $HOME/strava_data
     - run: export STRAVA_DATA_DIR="~/strava_data"
     - run: mkdir ~/strava_data || echo "Directory already exists" # Create the directory for storing Strava data
-    - run: echo "${{ secrets.USER_JSON }}" > $STRAVA_DATA_DIR/user.json
+    - run: echo "${{ secrets.USER_JSON }}" > ~/strava_data/user.json
     - run: export STRAVA_CLIENT_ID=${{ secrets.STRAVA_CLIENT_ID }} && export STRAVA_CLIENT_SECRET=${{ secrets.STRAVA_CLIENT_SECRET }}
     - run: julia - .github/workflows/download_all.jl
     - name: Upload data.jld2 artifact
