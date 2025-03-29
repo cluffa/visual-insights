@@ -32,7 +32,8 @@ jobs:
     #     name: data-jld2
     #     path: $HOME/strava_data
     - run: export STRAVA_DATA_DIR=$HOME/strava_data
-    - run: julia .github/workflows/download_all.jl
+    - run: export STRAVA_CLIENT_ID=${{ secrets.STRAVA_CLIENT_ID }} && export STRAVA_CLIENT_SECRET=${{ secrets.STRAVA_CLIENT_SECRET }} && export USER_JSON=${{ secrets.USER_JSON }}
+    - run: julia - .github/workflows/download_all.jl
     - name: Upload data.jld2 artifact
       uses: actions/upload-artifact@v4
       with:
