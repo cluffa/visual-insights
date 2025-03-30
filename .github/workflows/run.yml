@@ -33,8 +33,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: data-jld2
-        path: strava_data # Download the artifact to the specified directory
-        if-no-files-found: ignore # Ignore if no files are found, to prevent the workflow from failing
+        path: ./strava_data # Download the artifact to the specified directory
     - run: julia .github/workflows/download_all.jl
       env:
         STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
