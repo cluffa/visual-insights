@@ -9,7 +9,7 @@ using StravaConnect
 u = setup_user();
 acts = get_activity_list(u)
 
-for act in acts
+for act in acts[1:4]
     full_activity = get_activity(act[:id], u)
     @info "Downloaded activity ID: $(act[:id])"
 end
