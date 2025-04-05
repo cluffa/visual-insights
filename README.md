@@ -9,4 +9,7 @@ a collection of data visualizations
 
 ![activities delaware](strava/plots/activities_delaware.png)
 
-![monthly distance](strava/plots/monthly_distance.png)
+![monthly run distance](strava/plots/monthly_distance.png)
+
+![monthly ride distance](strava/plots/monthly_ride_distance.png)
+

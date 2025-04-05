@@ -11,7 +11,9 @@ colors = Symbol.(keys(Plots.Colors.color_names))
 
 # Get activities from Strava API
 u = (@isdefined u) ? u : setup_user()
-activity_list = get_activity_list(u)
+# activity_list = get_activity_list(u)
+activity_list = get_cached_activity_list()
+cached_ids = get_cached_activity_ids()
 reduce_subdicts!(activity_list)
 fill_dicts!(activity_list)
 activity_df = DataFrame(activity_list)
@@ -19,7 +21,7 @@ activity_df = DataFrame(activity_list)
 println("Total activities before filter: ", size(activity_df, 1))
 
 filter!(activity_df) do row
-    !isnothing(row.map_summary_polyline) && length(row.map_summary_polyline) > 0
+    length(row.map_summary_polyline) > 0 && row.id ∈ cached_ids
 end
 
 println("Activities with map data: ", size(activity_df, 1))
@@ -28,13 +30,13 @@ println("Activities with map data: ", size(activity_df, 1))
 activities = DataFrame[]
 @showprogress for id in activity_df.id
     act = get_activity(id, u)
-    println("Activity ID: ", id)
-    println("Keys in activity: ", keys(act))
+    # println("Activity ID: ", id)  ``
+    # println("Keys in activity: ", keys(act))
     reduce_subdicts!(act)
     # fill_dicts!(act) does not work for dicts, only vectors of dicts
     
     if haskey(act, :latlng_data) && !isnothing(act[:latlng_data]) && !isempty(act[:latlng_data])
-        println("Found lat/lng data for activity: ", id)
+        # println("Found lat/lng data for activity: ", id)
         df = DataFrame(
             lat = Float64[p[1] for p in act[:latlng_data]],
             lon = Float64[p[2] for p in act[:latlng_data]],
