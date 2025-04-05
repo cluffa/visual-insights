@@ -1,9 +1,9 @@
 using DataFrames
 using Plots
-using CSV
 using Dates
 using Printf
 using Statistics
+using StravaConnect
 
 struct Pace
     minutes::Float64
@@ -15,34 +15,40 @@ function Base.show(io::IO, p::Pace)
     @printf io "%d'%02d\"/mi" minutes seconds
 end
 
-"returns a new column name with no spaces or special characters, and capitalized first letters"
-function newName(name::String)
-    name = split(name)
-    name = join(uppercasefirst.(name))
-    name = replace(name, r"[^a-zA-Z0-9]" => "")
-    name = Symbol(name)
-end
-
 activities = begin
-    df = CSV.read("strava/data/activities.csv", DataFrame, dateformat = dateformat"u dd, y, HH:MM:SS p")
-
-    rename!(newName, df)
-    df.Distance = df.Distance .* 0.621371
-    df.ElapsedTime = df.ElapsedTime ./ 60
-    df.AvgPace = Pace.(df.ElapsedTime ./ df.Distance)
-
+    u = (@isdefined u) ? u : setup_user()
+    df = get_activity_list(u)
+    reduce_subdicts!(df)
+    fill_dicts!(df)
+    
+    df = DataFrame(df)
+    println("Total activities: ", size(df, 1))
+    println("Sample columns: ", names(df))
+    
+    # Convert to miles and minutes
+    df.distance = df.distance .* 0.000621371 # meters to miles
+    df.elapsed_time = df.elapsed_time ./ 60.0 # seconds to minutes
+    df.average_speed = Pace.(df.elapsed_time ./ df.distance)
+    
     df
 end
 
 begin
     df = copy(activities)
-    df[!, :YM] = Dates.format.(df[!, :ActivityDate], "Y-m")
-    df = combine(groupby(df, :YM), :Distance => sum, :ElapsedTime => sum)
-    df.AvgPace = df.ElapsedTime_sum ./ df.Distance_sum
+    # Parse dates using the correct ISO format with Z timezone indicator
+    df[!, :YM] = Dates.format.(DateTime.(df.start_date, dateformat"yyyy-mm-ddTHH:MM:SSZ"), "Y-m")
+    df = combine(groupby(df, :YM), :distance => sum, :elapsed_time => sum)
+    df.AvgPace = df.elapsed_time_sum ./ df.distance_sum
+
+    # Sort by date for better visualization
+    sort!(df, :YM)
+    
+    println("\nMonthly summary:")
+    println(df)
 
     p = plot(
         df[!, "YM"],
-        df[!, "Distance_sum"],
+        df[!, "distance_sum"],
         title = "Monthly Distance",
         xlabel = "Month",
         ylabel = "Distance (miles)",
@@ -54,7 +60,7 @@ begin
     plot!(
         twinx(),
         df[!, "YM"],
-        df[!, "AvgPace"],
+        df.AvgPace,
         label = "Average Pace",
         ylabel = "Average Pace (mins/mile)",
         yflip = true,
@@ -63,6 +69,11 @@ begin
     )
 
     savefig(p, "strava/plots/monthly_distance.png")
-    
+
+    if isinteractive()
+        display(p)
+    end
+
+    println("\nPlot saved to strava/plots/monthly_distance.png")
     p
 end
