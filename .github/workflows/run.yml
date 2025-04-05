@@ -53,3 +53,4 @@ jobs:
         name: data-jld2
         path: ./strava_data/data.jld2
         overwrite: true
+        compression-level: 9
