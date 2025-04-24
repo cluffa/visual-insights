@@ -7,7 +7,7 @@ Pkg.add(url = "https://github.com/cluffa/StravaConnect.jl.git")
 using StravaConnect
 
 u = setup_user();
-acts = get_activity_list(u; )
+acts = get_activity_list(u; force_update = true)
 
 for act in acts
     if contains(lowercase(act[:type]), "run") || contains(lowercase(act[:type]), "ride")
