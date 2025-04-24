@@ -26,7 +26,7 @@ for act in acts
     if contains(lowercase(act[:type]), "run") || contains(lowercase(act[:type]), "ride")
         try
             get_activity(act[:id], u; verbose = true) # Download each activity
-            sleep(87) # Sleep for 87 seconds to avoid hitting the rate limit
+            sleep(20) # Sleep to avoid hitting the rate limit
         catch e
             # Handle any errors that occur during the download
             @error "Failed to download activity $(act[:id]): $e"
