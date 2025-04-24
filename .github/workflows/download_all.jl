@@ -7,10 +7,10 @@ Pkg.add(url = "https://github.com/cluffa/StravaConnect.jl.git")
 using StravaConnect
 
 u = setup_user();
-acts = get_activity_list(u)
+acts = get_activity_list(u; )
 
 for act in acts
-    if contains(act[:type], "run") || contains(act[:type], "ride")
+    if contains(lowercase(act[:type]), "run") || contains(lowercase(act[:type]), "ride")
         try
             get_activity(act[:id], u; verbose = true) # Download each activity
             sleep(87) # Sleep for 87 seconds to avoid hitting the rate limit
