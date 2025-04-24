@@ -10,12 +10,17 @@ u = setup_user();
 acts = get_activity_list(u)
 
 for act in acts
-    try
-        get_activity(act[:id], u; verbose = true) # Download each activity
-    catch e
-        # Handle any errors that occur during the download
-        @error "Failed to download activity $(act[:id]): $e"
-        # Optionally, you can continue or break based on the error type
-        continue
+    if contains(act[:type], "run") || contains(act[:type], "ride")
+        try
+            get_activity(act[:id], u; verbose = true) # Download each activity
+            sleep(87) # Sleep for 87 seconds to avoid hitting the rate limit
+        catch e
+            # Handle any errors that occur during the download
+            @error "Failed to download activity $(act[:id]): $e"
+            # Optionally, you can continue or break based on the error type
+            continue
+        end
+    else
+        @info "Skipping activity $(act[:id]) of type $(act[:type])"
     end
 end
