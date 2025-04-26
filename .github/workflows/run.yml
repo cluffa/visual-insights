@@ -30,18 +30,25 @@ jobs:
     - uses: julia-actions/setup-julia@v2
       with:
         version: '1'
-    - uses: julia-actions/cache@v2
-    - name: Cache Strava Data
-      id: cache-strava-data
-      uses: actions/cache@v4
+    - uses: julia-actions/cache@v2 # Keep this for Julia package caching
+
+    - name: Restore Strava Data Cache
+      id: cache-strava-data # Keep the ID
+      uses: actions/cache/restore@v4 # Use restore action
       with:
         path: ./strava_data
-        key: ${{ runner.os }}-strava-data
+        # Attempt to restore using a unique key for this run (likely miss)
+        key: ${{ runner.os }}-strava-data-${{ github.run_id }}
+        # Fallback to the latest cache matching this prefix
+        restore-keys: |
+          ${{ runner.os }}-strava-data-
 
-    - run: mkdir ./strava_data || echo "Directory already exists" # Create the directory for storing Strava data
-      if: steps.cache-strava-data.outputs.cache-hit != 'true'
+    # Create directory/file only if NO cache was restored (neither primary nor partial)
+    - run: mkdir ./strava_data || echo "Directory already exists"
+      if: steps.cache-strava-data.outputs.cache-hit == ''
     - run: touch ./strava_data/user.json
-      if: steps.cache-strava-data.outputs.cache-hit != 'true'
+      if: steps.cache-strava-data.outputs.cache-hit == ''
+
     - name: Download Strava data
       continue-on-error: true
       run: julia .github/workflows/download_all.jl
@@ -50,14 +57,6 @@ jobs:
         STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
         STRAVA_DATA_DIR: ./strava_data
         USER_JSON: ${{ secrets.USER_JSON }}
-
-    # Step to SAVE the Strava data cache unconditionally
-    - name: Save Strava Data Cache
-      uses: actions/cache/save@v4
-      if: always() # Ensures this step runs even if previous steps fail
-      with:
-        path: ./strava_data
-        key: ${{ runner.os }}-strava-data # Use the same key as the restore step
 
     - name: Upload data.jld2 artifact
       uses: actions/upload-artifact@v4
