@@ -58,6 +58,14 @@ jobs:
         STRAVA_DATA_DIR: ./strava_data
         USER_JSON: ${{ secrets.USER_JSON }}
 
+    # Step to SAVE the Strava data cache unconditionally using the unique key
+    - name: Save Strava Data Cache
+      uses: actions/cache/save@v4
+      if: always() # Ensures this step runs even if previous steps fail
+      with:
+        path: ./strava_data
+        key: ${{ runner.os }}-strava-data-${{ github.run_id }} # Save with the unique key
+
     - name: Upload data.jld2 artifact
       uses: actions/upload-artifact@v4
       with:
