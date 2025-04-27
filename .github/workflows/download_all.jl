@@ -12,7 +12,7 @@ u = setup_user();
 acts = get_activity_list(u; force_update = true)
 
 start_time = now() # Record the start time
-max_duration = Second(30) # Set the maximum duration for the download process
+max_duration = Minute(30) # Set the maximum duration for the download process
 
 for act in acts
     # Check if elapsed time exceeds the maximum duration
